@@ -1,0 +1,37 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Management{% endblock %} | {{ SITE_NAME }}</title>
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body class="manage-body">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="manage-bar">
+    <div class="wrap">
+      <a class="brand" href="{% url 'dashboard:index' %}">{{ SITE_NAME }} management</a>
+      {% if user.is_authenticated and user.is_staff %}
+      <nav class="manage-nav" aria-label="Management">
+        <a href="{% url 'dashboard:index' %}"{% if section == 'index' %} aria-current="page"{% endif %}>Dashboard</a>
+        <a href="{% url 'dashboard:publication_list' %}"{% if section == 'publications' %} aria-current="page"{% endif %}>Publications</a>
+        <a href="{% url 'dashboard:category_list' %}"{% if section == 'categories' %} aria-current="page"{% endif %}>Categories</a>
+        <a href="{% url 'dashboard:page_list' %}"{% if section == 'pages' %} aria-current="page"{% endif %}>Pages</a>
+        <a href="{% url 'publications:home' %}" target="_blank" rel="noopener">View site</a>
+        <form class="inline-form" method="post" action="{% url 'dashboard:logout' %}">
+          {% csrf_token %}
+          <button type="submit">Sign out ({{ user.get_username }})</button>
+        </form>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+  <main id="content" class="manage-main">
+    <div class="wrap">
+      {% include "partials/messages.html" %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</body>
+</html>

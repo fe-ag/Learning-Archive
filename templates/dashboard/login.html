@@ -1,0 +1,25 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="panel login-card">
+  <h1>Sign in</h1>
+  <p>Staff accounts only.</p>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="form-errors" role="alert">
+      {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+    </div>
+    {% endif %}
+    {% for field in form %}
+    <div class="field{% if field.errors %} has-error{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+    </div>
+    {% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+</div>
+{% endblock %}

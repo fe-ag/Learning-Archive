@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap" style="padding-top:3rem">
+  <h1>Page not found</h1>
+  <p>The page you asked for doesn’t exist or is no longer published.</p>
+  <p><a class="btn" href="{% url 'publications:list' %}">Browse the archive</a></p>
+</div>
+{% endblock %}

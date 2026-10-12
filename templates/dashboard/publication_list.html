@@ -1,0 +1,61 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Publications{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h1>Publications</h1>
+  <a class="btn" href="{% url 'dashboard:publication_create' %}">New publication</a>
+</div>
+
+<form class="filter-bar" method="get" aria-label="Filter publications">
+  <div class="field"><label for="q">Search</label><input class="input" id="q" type="search" name="q" value="{{ q }}" placeholder="Title or author"></div>
+  <div class="field"><label for="status">Status</label>
+    <select class="input" id="status" name="status">
+      <option value="">All</option>
+      {% for value, label in status_choices %}<option value="{{ value }}"{% if value == selected_status %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label for="kind">Type</label>
+    <select class="input" id="kind" name="kind">
+      <option value="">All</option>
+      {% for value, label in kind_choices %}<option value="{{ value }}"{% if value == selected_kind %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><label for="category">Category</label>
+    <select class="input" id="category" name="category">
+      <option value="">All</option>
+      {% for item in categories %}<option value="{{ item.pk }}"{% if item.pk|stringformat:"s" == selected_category %} selected{% endif %}>{{ item.name }}</option>{% endfor %}
+    </select></div>
+  <div class="field"><button class="btn" type="submit">Filter</button></div>
+</form>
+
+{% if items %}
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th scope="col">Title</th><th scope="col">Category</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Updated</th><th scope="col">Actions</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td><a href="{% url 'dashboard:publication_update' item.pk %}">{{ item.title }}</a>{% if item.is_featured %} <span class="badge badge-published">Featured</span>{% endif %}</td>
+        <td>{{ item.category.name }}</td>
+        <td>{{ item.get_kind_display }}</td>
+        <td><span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span>{% if item.status == 'published' and not item.is_live %} <span class="help">Scheduled</span>{% endif %}</td>
+        <td>{{ item.updated_at|date:"j M Y" }}</td>
+        <td>
+          <div class="row-actions">
+            <a class="btn btn-secondary btn-small" href="{% url 'dashboard:publication_update' item.pk %}">Edit</a>
+            {% if item.is_live %}<a class="btn btn-secondary btn-small" href="{{ item.get_absolute_url }}" target="_blank" rel="noopener">View</a>{% endif %}
+            <form class="inline-form" method="post" action="{% url 'dashboard:publication_toggle' item.pk %}">
+              {% csrf_token %}
+              <button class="btn btn-secondary btn-small" type="submit">{% if item.status == 'published' %}Unpublish{% else %}Publish{% endif %}</button>
+            </form>
+            <a class="btn btn-danger btn-small" href="{% url 'dashboard:publication_delete' item.pk %}">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "partials/pagination.html" %}
+{% else %}
+<div class="panel"><p><strong>No publications found.</strong></p><p>Change the filters or add a new publication.</p><a class="btn" href="{% url 'dashboard:publication_create' %}">New publication</a></div>
+{% endif %}
+{% endblock %}

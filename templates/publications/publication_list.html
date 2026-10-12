@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div class="wrap">
+    <p class="breadcrumb"><a href="{% url 'publications:home' %}">Home</a> / {% if category %}<a href="{% url 'publications:list' %}">Browse</a> / {{ category.name }}{% else %}Browse{% endif %}</p>
+    <h1>{% if category %}{{ category.name }}{% else %}Browse the archive{% endif %}</h1>
+    {% if category and category.description %}<p>{{ category.description }}</p>{% endif %}
+  </div>
+</div>
+
+<div class="wrap listing">
+  <aside aria-label="Search and filters">
+    <form class="filters" method="get" action="{{ request.path }}">
+      <div class="field">
+        <label for="f-q">Search</label>
+        <input class="input" id="f-q" type="search" name="q" value="{{ q }}" maxlength="100">
+      </div>
+      {% if not category %}
+      <div class="field">
+        <label for="f-category">Category</label>
+        <select class="input" id="f-category" name="category">
+          <option value="">All categories</option>
+          {% for item in categories %}
+          <option value="{{ item.slug }}"{% if item.slug == selected_category %} selected{% endif %}>{{ item.name }} ({{ item.published_count }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="field">
+        <label for="f-kind">Type</label>
+        <select class="input" id="f-kind" name="kind">
+          <option value="">All types</option>
+          {% for value, label in kinds %}
+          <option value="{{ value }}"{% if value == selected_kind %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-sort">Sort by</label>
+        <select class="input" id="f-sort" name="sort">
+          {% for value, label in sorts %}
+          <option value="{{ value }}"{% if value == selected_sort %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn" type="submit">Apply</button>
+        <a class="btn btn-secondary" href="{{ request.path }}">Reset</a>
+      </div>
+    </form>
+  </aside>
+
+  <section aria-label="Results">
+    <p class="result-count" aria-live="polite">{{ paginator.count }} result{{ paginator.count|pluralize }}{% if q %} for “{{ q }}”{% endif %}</p>
+    {% for pub in publications %}
+      {% include "partials/publication_entry.html" %}
+    {% empty %}
+      <div class="empty">
+        <p><strong>No publications match.</strong></p>
+        <p>Try a different search term or remove a filter.</p>
+        <a class="btn btn-secondary" href="{{ request.path }}">Clear filters</a>
+      </div>
+    {% endfor %}
+    {% include "partials/pagination.html" %}
+  </section>
+</div>
+{% endblock %}

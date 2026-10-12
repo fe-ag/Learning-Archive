@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrap">
+  <article class="article">
+    <p class="breadcrumb"><a href="{% url 'publications:home' %}">Home</a> / <a href="{{ publication.category.get_absolute_url }}">{{ publication.category.name }}</a></p>
+    <p class="entry-meta">
+      <span class="kind">{{ publication.get_kind_display }}</span>
+      {% if publication.published_at %}<time datetime="{{ publication.published_at|date:'Y-m-d' }}">{{ publication.published_at|date:"j F Y" }}</time>{% endif %}
+    </p>
+    <h1>{{ publication.title }}</h1>
+    {% if publication.authors %}<p class="entry-authors">{{ publication.authors }}</p>{% endif %}
+    <p class="lead">{{ publication.summary }}</p>
+
+    {% if publication.attachment or publication.external_url %}
+    <div class="download-box">
+      <strong>Get this resource</strong>
+      <p>
+        {% if publication.attachment %}File: {{ publication.attachment_name }} ({{ publication.attachment_type }}){% endif %}
+      </p>
+      {% if publication.attachment %}<a class="btn" href="{{ publication.attachment.url }}" download>Download {{ publication.attachment_type }}</a>{% endif %}
+      {% if publication.external_url %}<a class="btn btn-secondary" href="{{ publication.external_url }}" rel="noopener noreferrer nofollow" target="_blank">Open original source</a>{% endif %}
+    </div>
+    {% endif %}
+
+    {% if publication.body %}
+    <div class="article-body">{{ publication.body|linebreaks }}</div>
+    {% endif %}
+  </article>
+
+  {% if related %}
+  <section class="section" aria-labelledby="related-heading">
+    <div class="section-head"><h2 id="related-heading">More in {{ publication.category.name }}</h2></div>
+    {% for pub in related %}{% include "partials/publication_entry.html" %}{% endfor %}
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

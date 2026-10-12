@@ -1,0 +1,39 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Pages{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h1>Pages</h1>
+  <a class="btn" href="{% url 'dashboard:page_create' %}">New page</a>
+</div>
+
+<form class="filter-bar" method="get" aria-label="Search pages" style="grid-template-columns:1fr auto">
+  <div class="field"><label for="q">Search</label><input class="input" id="q" type="search" name="q" value="{{ q }}" placeholder="Page title"></div>
+  <div class="field"><button class="btn" type="submit">Search</button></div>
+</form>
+
+{% if items %}
+<div class="table-wrap">
+  <table class="data">
+    <thead><tr><th scope="col">Title</th><th scope="col">Address</th><th scope="col">Status</th><th scope="col">In menu</th><th scope="col">Actions</th></tr></thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td><a href="{% url 'dashboard:page_update' item.pk %}">{{ item.title }}</a></td>
+        <td>/page/{{ item.slug }}/</td>
+        <td><span class="badge {% if item.is_published %}badge-published{% else %}badge-draft{% endif %}">{% if item.is_published %}Published{% else %}Hidden{% endif %}</span></td>
+        <td>{% if item.show_in_menu %}Yes (order {{ item.menu_order }}){% else %}No{% endif %}</td>
+        <td><div class="row-actions">
+          <a class="btn btn-secondary btn-small" href="{% url 'dashboard:page_update' item.pk %}">Edit</a>
+          {% if item.is_published %}<a class="btn btn-secondary btn-small" href="{{ item.get_absolute_url }}" target="_blank" rel="noopener">View</a>{% endif %}
+          <a class="btn btn-danger btn-small" href="{% url 'dashboard:page_delete' item.pk %}">Delete</a>
+        </div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "partials/pagination.html" %}
+{% else %}
+<div class="panel"><p><strong>No pages found.</strong></p><a class="btn" href="{% url 'dashboard:page_create' %}">New page</a></div>
+{% endif %}
+{% endblock %}

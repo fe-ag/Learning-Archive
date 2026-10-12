@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="wrap">
+    <h1>Find articles, papers and learning resources</h1>
+    <p class="lead">{{ SITE_TAGLINE }}</p>
+    <form class="search-form" action="{% url 'publications:list' %}" method="get" role="search">
+      <label class="visually-hidden" for="home-search">Search the archive</label>
+      <input class="input" id="home-search" type="search" name="q" placeholder="Search by title, author or topic" maxlength="100">
+      <button class="btn" type="submit">Search</button>
+    </form>
+  </div>
+</section>
+
+<div class="wrap">
+  {% if featured %}
+  <section class="section" aria-labelledby="featured-heading">
+    <div class="section-head"><h2 id="featured-heading">Featured</h2></div>
+    <div class="featured-grid">
+      {% for pub in featured %}{% include "partials/publication_entry.html" %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section" aria-labelledby="categories-heading">
+    <div class="section-head"><h2 id="categories-heading">Browse by category</h2></div>
+    {% if categories %}
+    <ul class="index-list">
+      {% for category in categories %}
+      <li>
+        <a href="{{ category.get_absolute_url }}">
+          <span class="index-name">{{ category.name }}</span>
+          <span class="index-leader" aria-hidden="true"></span>
+          <span class="index-count">{{ category.published_count }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty">No categories have published items yet. Check back soon.</p>
+    {% endif %}
+  </section>
+
+  <section class="section" aria-labelledby="latest-heading">
+    <div class="section-head">
+      <h2 id="latest-heading">Latest additions</h2>
+      <a href="{% url 'publications:list' %}">See everything</a>
+    </div>
+    {% for pub in latest %}
+      {% include "partials/publication_entry.html" %}
+    {% empty %}
+      <p class="empty">Nothing has been published yet.</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

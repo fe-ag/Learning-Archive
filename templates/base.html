@@ -1,0 +1,70 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if meta_title %}{{ meta_title }} | {{ SITE_NAME }}{% else %}{{ SITE_NAME }}{% endif %}</title>
+  <meta name="description" content="{{ meta_description|default:SITE_TAGLINE }}">
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <meta property="og:site_name" content="{{ SITE_NAME }}">
+  <meta property="og:title" content="{{ meta_title|default:SITE_NAME }}">
+  <meta property="og:description" content="{{ meta_description|default:SITE_TAGLINE }}">
+  <meta property="og:type" content="{{ og_type|default:'website' }}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="{% url 'publications:home' %}">{{ SITE_NAME }}</a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav">Menu</button>
+      <nav class="nav" id="site-nav" data-nav aria-label="Main">
+        <ul>
+          <li><a href="{% url 'publications:list' %}">Browse</a></li>
+          {% for menu_page in menu_pages %}
+          <li><a href="{{ menu_page.get_absolute_url }}">{{ menu_page.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    {% if messages %}
+    <div class="wrap">{% include "partials/messages.html" %}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h2>{{ SITE_NAME }}</h2>
+        <p>{{ SITE_TAGLINE }}</p>
+      </div>
+      <div>
+        <h2>Categories</h2>
+        <ul>
+          {% for nav_category in nav_categories %}
+          <li><a href="{{ nav_category.get_absolute_url }}">{{ nav_category.name }}</a></li>
+          {% empty %}
+          <li>No categories yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <h2>Site</h2>
+        <ul>
+          <li><a href="{% url 'publications:list' %}">Browse the archive</a></li>
+          {% for menu_page in menu_pages %}
+          <li><a href="{{ menu_page.get_absolute_url }}">{{ menu_page.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <script src="{% static 'js/nav.js' %}"></script>
+</body>
+</html>

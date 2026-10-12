@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<div class="toolbar"><h1>{{ heading }}</h1></div>
+<form class="panel form-card" method="post"{% if multipart %} enctype="multipart/form-data"{% endif %} novalidate>
+  {% csrf_token %}
+  {% include "partials/form_fields.html" %}
+  <div class="form-actions">
+    <button class="btn" type="submit">Save</button>
+    <a class="btn btn-secondary" href="{{ cancel_url }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

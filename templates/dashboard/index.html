@@ -1,0 +1,39 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h1>Dashboard</h1>
+  <a class="btn" href="{% url 'dashboard:publication_create' %}">New publication</a>
+</div>
+
+<div class="stat-grid">
+  <a class="stat" href="{% url 'dashboard:publication_list' %}?status=published"><strong>{{ published_count }}</strong> Published</a>
+  <a class="stat" href="{% url 'dashboard:publication_list' %}?status=draft"><strong>{{ draft_count }}</strong> Drafts</a>
+  <a class="stat" href="{% url 'dashboard:category_list' %}"><strong>{{ category_count }}</strong> Categories</a>
+  <a class="stat" href="{% url 'dashboard:page_list' %}"><strong>{{ page_count }}</strong> Pages</a>
+</div>
+
+<section class="panel" aria-labelledby="recent-heading">
+  <h2 id="recent-heading">Recently edited</h2>
+  {% if recent %}
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th scope="col">Title</th><th scope="col">Category</th><th scope="col">Status</th><th scope="col">Updated</th></tr></thead>
+      <tbody>
+        {% for item in recent %}
+        <tr>
+          <td><a href="{% url 'dashboard:publication_update' item.pk %}">{{ item.title }}</a></td>
+          <td>{{ item.category.name }}</td>
+          <td><span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span></td>
+          <td>{{ item.updated_at|date:"j M Y, H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p>No publications yet. Create a category first, then add your first publication.</p>
+  <a class="btn btn-secondary" href="{% url 'dashboard:category_create' %}">New category</a>
+  {% endif %}
+</section>
+{% endblock %}

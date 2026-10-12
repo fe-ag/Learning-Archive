@@ -1,0 +1,10 @@
+<article class="entry">
+  <p class="entry-meta">
+    <span class="kind">{{ pub.get_kind_display }}</span>
+    <a href="{{ pub.category.get_absolute_url }}">{{ pub.category.name }}</a>
+    {% if pub.published_at %}<time datetime="{{ pub.published_at|date:'Y-m-d' }}">{{ pub.published_at|date:"j M Y" }}</time>{% endif %}
+  </p>
+  <h3><a href="{{ pub.get_absolute_url }}">{{ pub.title }}</a></h3>
+  {% if pub.authors %}<p class="entry-authors">{{ pub.authors }}</p>{% endif %}
+  <p>{{ pub.summary|truncatewords:40 }}</p>
+</article>
